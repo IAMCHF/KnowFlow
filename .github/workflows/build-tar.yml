@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-tar:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04-large
     steps:
       - name: Checkout
         uses: actions/checkout@v4
