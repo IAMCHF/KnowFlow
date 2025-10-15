@@ -1,0 +1,37 @@
+name: Build KnowFlow Docker TAR
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-tar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (linux/amd64) and export as docker-archive tar
+        run: |
+          IMAGE_NAME=knowflow_production
+          TAG=${{ github.sha }}
+          docker buildx build \
+            --platform linux/amd64 \
+            --target production \
+            -t ${IMAGE_NAME}:${TAG} \
+            --output type=docker,dest=knowflow_production_${TAG}.tar \
+            .
+
+      - name: Upload TAR as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: knowflow_production_${{ github.sha }}.tar
+          path: knowflow_production_${{ github.sha }}.tar
+          if-no-files-found: error
